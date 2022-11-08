@@ -1,0 +1,24 @@
+{
+  "name": "task7-cleanblog",
+  "version": "1.0.0",
+  "description": "clean blog ",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "keywords": [
+    "blog"
+  ],
+  "type": "module",
+  "author": "hsyn",
+  "license": "ISC",
+  "dependencies": {
+    "colors": "^1.4.0",
+    "ejs": "^3.1.8",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}

@@ -1,18 +1,31 @@
 import express from "express";
 import colors from "colors";
+import path from 'path'
+import { fileURLToPath } from 'url';
+import ejs from 'ejs'
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const port = 3000;
 
+// TEMPLATE ENGINE
+app.set("view engine", "ejs");
+
+// MIDDLEWARE
+app.use(express.static("public"));
+
+// ROUTES
 app.get("/", (req, res) => {
+  res.render("index");
+});
 
-    const photo = {
-        id: 10,
-        name: "photo-awesome",
-        description: "some awesome photos",
-    }
+app.get("/about", (req, res) => {
+  res.render("about");
+});
 
-  res.send(photo);
+app.get("/add", (req, res) => {
+  res.render("add");
 });
 
 app.listen(port, () => {
