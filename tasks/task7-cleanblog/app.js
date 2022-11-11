@@ -1,14 +1,12 @@
 import express from "express";
 import colors from "colors";
-import path from 'path'
-import { fileURLToPath } from 'url';
 import ejs from 'ejs'
 import mongoose from 'mongoose'
 import dotenv from 'dotenv'
-import {Blog} from './models/Blog.js'
+import methodOverride from 'method-override'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { createBlog, deleteBlog, getAllBlogs, getBlog, updateBlog } from "./controllers/blogController.js";
+import { getAboutPage, getAddPostPage, getEditPage } from "./controllers/pageController.js";
 
 dotenv.config()
 
@@ -37,34 +35,21 @@ app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
+app.use(methodOverride('_method', {
+  methods: ["POST", "GET"]
+}))
 
 // ROUTES
-app.get("/", async (req, res) => {
-  const blog = await Blog.find({})
-  res.render("index",{
-    blog
-  });
-});
+app.get("/", getAllBlogs);
+app.get("/post/:id", getBlog);
+app.put("/post/:id", updateBlog);
+app.post("/add_post",createBlog);
+app.get("/post/edit/:id", getEditPage);
+app.delete("/post/:id", deleteBlog);
 
-app.get("/about", (req, res) => {
-  res.render("about");
-});
+app.get("/about", getAboutPage);
+app.get("/add_post", getAddPostPage);
 
-app.get("/add_post", (req, res) => {
-  res.render("add_post");
-});
-
-app.get("/post/:id", async(req, res) => {
-  const blog = await Blog.findById(req.params.id)
-  res.render("post",{
-    blog
-  });
-});
-
-app.post("/add_post", async (req, res) => {
-  await Blog.create(req.body)
-  res.redirect("/")
-});
 
 app.listen(port, () => {
   console.log(`Server is up port:${port}`.bgGreen.underline.bold);

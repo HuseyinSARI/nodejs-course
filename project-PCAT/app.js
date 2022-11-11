@@ -1,19 +1,17 @@
 import express from "express";
 import colors from "colors";
-import path from 'path'
-import { fileURLToPath } from 'url';
 import ejs from 'ejs'
-import { Photo } from './Models/Photo.js'
 import mongoose from 'mongoose'
 import dotenv from 'dotenv'
+import fileUpload from 'express-fileupload'
+import methodOverride from 'method-override'
 dotenv.config()
+import { getAllPhotos, getPhoto, createPhoto, updatePhoto, deletePhoto } from './controllers/photoController.js'
+import { getAboutPage, getAddPage, getEditPage } from './controllers/pageController.js'
 
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 5000;
 
 // Connect DB
 const connectDB = async () => {
@@ -36,38 +34,22 @@ app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
+app.use(fileUpload())
+app.use(methodOverride('_method', {
+  methods: ["POST", "GET"]
+}))
 
 
 // ROUTES
-app.get("/", async (req, res) => {
-  const photos = await Photo.find({})
-  res.render("index", {
-    photos
-  });
-});
+app.get("/", getAllPhotos);
+app.get("/photos/:id", getPhoto);
+app.post("/photos", createPhoto);
+app.put("/photos/:id", updatePhoto);
+app.delete("/photos/:id", deletePhoto);
 
-
-
-app.get("/about", (req, res) => {
-  res.render("about");
-});
-
-app.get("/add", (req, res) => {
-  res.render("add");
-});
-
-app.post("/photos", async (req, res) => {
-  await Photo.create(req.body)
-  res.redirect("/")
-});
-
-app.get("/photos/:id",async (req, res) => {
-  //console.log(req.params.id);
-  const photo = await Photo.findById(req.params.id)
-  res.render("photo",{
-    photo
-  })
-});
+app.get("/about", getAboutPage);
+app.get("/add", getAddPage);
+app.get("/photos/edit/:id", getEditPage);
 
 app.listen(port, () => {
   console.log(`Server is up port:${port}`.bgGreen.underline.bold);
